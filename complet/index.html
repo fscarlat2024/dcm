@@ -39,6 +39,20 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .try{background:var(--pcard);border:1px solid var(--pline);border-radius:18px;padding:16px 18px;margin:18px 0;max-width:660px}
 .try b{display:block;margin-bottom:8px}
 .try ol{margin:0;padding-left:20px;color:var(--pmute);display:grid;gap:4px}
+.mk{margin-top:22px;max-width:660px;background:var(--pcard);border:1px solid var(--pline);border-radius:14px;padding:14px 16px}
+.mkh{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px}
+.mkh b{font:400 20px var(--display);color:var(--brown)}
+.mkdot{font:700 11px var(--body);color:var(--ok);background:#e6f1e8;border-radius:999px;padding:3px 9px}
+.mk p{font-size:13.5px}
+.mkrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.mkrow .field{flex:1 1 220px;min-width:0;margin:0}
+.mkchk{font-size:13px;color:var(--pmute);display:flex;gap:6px;align-items:center}
+.mklog{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:6px;font-size:12.5px;max-height:220px;overflow:auto}
+.mklog li{display:flex;gap:8px;align-items:baseline;color:var(--pink)}
+.mklog li.mut{color:var(--pmute);font-style:italic}
+.mklog i{font-style:normal;font-weight:800;min-width:18px}
+.mklog .ok i{color:var(--ok)} .mklog .no i{color:var(--bad)} .mklog .ev i{color:var(--gold)}
+.mklog small{color:var(--pmute);margin-left:auto;white-space:nowrap}
 .ideas{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:660px}
 .ideas li{background:var(--pcard);border:1px solid var(--pline);border-radius:16px;padding:12px 14px}
 .ideas b{display:block;font-size:14px;margin-bottom:2px}
@@ -226,6 +240,16 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
       </ol>
     </div>
 
+    <div class="mk" id="mk">
+      <div class="mkh"><b>Legat de TheMarketer</b><span class="mkdot" id="mkdot">cont de test</span></div>
+      <p>Comenzile plătite în aplicație ajung în TheMarketer ca să le folosiți pentru emailuri, SMS-uri și fidelitate. Scrieți un email de test: cu el apare clientul în contul TheMarketer.</p>
+      <div class="mkrow">
+        <input class="field" id="mkEmail" type="email" placeholder="email de test" aria-label="Email de test pentru TheMarketer" autocomplete="email">
+        <label class="mkchk"><input type="checkbox" id="mkNews"> abonează la newsletter</label>
+      </div>
+      <ul class="mklog" id="mkLog"><li class="mut">Încă nu s-a trimis nimic. Plătiți o comandă ca client.</li></ul>
+    </div>
+
     <h2>Alte idei pe care le putem adăuga</h2>
     <ul class="ideas">
       <li><b>Avans pentru torturi personalizate</b><span>Clientul plătește 30% la comandă printr-un link, restul la ridicare.</span></li>
@@ -351,6 +375,7 @@ let pt; function notify(t,x,who){
 }
 function setStatus(o,s,drv){
   o.st=s; if(drv){ o.drv=drv; o.t=0; o.arrived=false; }
+  if(MK) MK.status(o,s);
   const me = o.no===S.myNo;
   if(me){
     const msg = s===1?['Comanda ta e în lucru',`Cofetarii au început comanda #${o.no}.`]
@@ -522,7 +547,8 @@ document.addEventListener('click',e=>{
   const b=e.target.closest('button'); if(!b) return; const d=b.dataset;
   if(d.role){ setRole(d.role); if(b.classList.contains('rs')) window.scrollTo({top:0,behavior:'smooth'}); return; }
   if(d.tab){ if(S.role==='client') go('client',d.tab); else go('staff',d.tab); return; }
-  if(d.q){ const n=(S.cart[d.q]||0)+ +d.d; if(n<=0) delete S.cart[d.q]; else S.cart[d.q]=n; render(); if(+d.d>0) toast('Adăugat în coș'); return; }
+  if(d.q){ const n=(S.cart[d.q]||0)+ +d.d; if(n<=0) delete S.cart[d.q]; else S.cart[d.q]=n; render(); if(+d.d>0) toast('Adăugat în coș');
+    const m=MENU.find(x=>x.id===d.q); MK.dl(+d.d>0?'__sm__add_to_cart':'__sm__remove_from_cart',{product_id:d.q,quantity:1},(+d.d>0?'Adăugat în coș: ':'Scos din coș: ')+(m?m.n:d.q)); return; }
   if(d.mode){ S.mode=d.mode; render(); return; }
   if(d.day){ S.day=d.day; render(); return; }
   if('pts' in d){ S.usePts=!S.usePts; render(); return; }
@@ -533,7 +559,7 @@ document.addEventListener('click',e=>{
     if(disc){ S.pts-=disc*10; S.hist.unshift({t:`Puncte folosite la #${no}`,d:'azi',v:'−'+disc*10}); }
     S.pts+=tot; S.hist.unshift({t:`Comanda #${no}`,d:'azi · '+lei(tot),v:'+'+tot});
     S.orders.push({no, client:'Cristina Popescu', phone:'0722 123 456', items, total:tot, paid:true, chn:'app', mode:S.mode, store:'afi', addr:S.mode==='livrare'?S.addr:'', dest:S.mode==='livrare'?{x:178,y:186}:null, when:S.day+(S.mode==='livrare'?', 14:00–16:00':', 15:00'), st:0, earned:tot});
-    S.myNo=no; S.cart={}; S.usePts=false; go('client','done'); return;
+    S.myNo=no; S.cart={}; S.usePts=false; go('client','done'); MK.order(S.orders[S.orders.length-1],disc,S.mode==='livrare'?fee:0); return;
   }
   if(d.filter){ S.filter=d.filter; render(); return; }
   if(d.st){ const o=ord(+d.st); setStatus(o,+d.to); toast(`#${o.no}: ${stLabel(o)}`); return; }
@@ -549,6 +575,53 @@ document.addEventListener('click',e=>{
   if(d.dv){ S.dv=d.dv; render(); return; }
   if(d.deliver){ const o=ord(+d.deliver); o.t=1; setStatus(o,4); toast(`#${o.no} livrată`); return; }
 });
+
+/* ---------- TheMarketer (cont de test) ---------- */
+var MK = (()=>{
+  const API='https://palmiye-marketer.flscarlat.workers.dev';
+  const sess=Date.now().toString(36).slice(-4).toUpperCase();
+  window.dataLayer=window.dataLayer||[];
+  (function(){ window.mktr_key='C5OWYPJA'; const s=document.createElement('script'); s.async=true; s.src='https://t.themarketer.com/t/j/'+window.mktr_key; document.head.appendChild(s); })();
+  const em=$('#mkEmail'), nw=$('#mkNews'), log=$('#mkLog');
+  try{ em.value=localStorage.getItem('mkEmail')||''; nw.checked=localStorage.getItem('mkNews')==='1'; }catch(e){}
+  em.oninput=()=>{ try{localStorage.setItem('mkEmail',em.value.trim());}catch(e){} };
+  nw.onchange=()=>{ try{localStorage.setItem('mkNews',nw.checked?'1':'0');}catch(e){} };
+  const email=()=>{ const v=em.value.trim(); return /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(v)?v:''; };
+  function line(cls,ico,txt,note){
+    const m=log.querySelector('.mut'); if(m) m.remove();
+    const li=document.createElement('li'); li.className=cls;
+    li.innerHTML=`<i>${ico}</i><span>${esc(txt)}</span>${note?`<small>${esc(note)}</small>`:''}`;
+    log.prepend(li); while(log.children.length>14) log.lastChild.remove();
+  }
+  function dl(ev,data,label){ window.dataLayer.push(Object.assign({event:ev},data||{})); if(label) line('ev','•',label,'urmărire'); }
+  async function post(path,body){
+    try{ const r=await fetch(API+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+      const j=await r.json(); return j.ok===true; }catch(e){ return false; }
+  }
+  const STAT={1:'processing',2:'ready',3:'shipped',4:'fulfilled'};
+  return {
+    dl,
+    async order(o,disc,fee){
+      const mail=email(); o.mkNo=`APP-${sess}-${o.no}`;
+      dl('__sm__initiate_checkout');
+      if(!mail){ line('no','!',`Comanda #${o.no} nu a plecat în TheMarketer: scrieți un email de test mai sus.`); o.mkNo=null; return; }
+      dl('__sm__set_email',{email_address:mail,firstname:'Cristina',lastname:'Popescu'});
+      dl('__sm__order',{number:o.mkNo,email_address:mail,phone:'0722123456',firstname:'Cristina',lastname:'Popescu',city:'București',county:'București',address:o.addr||'Ridicare AFI Cotroceni',discount_value:disc,discount_code:'',shipping:fee,tax:0,total_value:o.total,products:o.items.map(i=>({product_id:MENU.find(m=>m.n===i.n)?.id||i.n,price:i.p,quantity:i.q,variation_sku:''}))});
+      const ok=await post('/comanda',{number:o.mkNo,email:mail,phone:'0722123456',firstname:'Cristina',lastname:'Popescu',address:o.addr||'Ridicare AFI Cotroceni',discount_value:disc,shipping:fee,total_value:o.total,
+        products:o.items.map(i=>({product_id:MENU.find(m=>m.n===i.n)?.id||i.n,price:i.p,quantity:i.q}))});
+      line(ok?'ok':'no',ok?'✓':'✕',ok?`Comanda ${o.mkNo} (${lei(o.total)}) a ajuns în TheMarketer`:`Comanda ${o.mkNo} nu a putut fi trimisă`, mail);
+      if(!ok){ o.mkNo=null; return; }
+      if(nw.checked){ const s=await post('/abonare',{email:mail,phone:'0722123456',firstname:'Cristina',lastname:'Popescu'});
+        line(s?'ok':'no',s?'✓':'✕',s?'Abonare trimisă: TheMarketer cere confirmare pe email':'Abonarea nu a mers'); }
+    },
+    async status(o,s){
+      if(!o.mkNo||!STAT[s]) return;
+      const ok=await post('/status',{number:o.mkNo,status:STAT[s]});
+      line(ok?'ok':'no',ok?'✓':'✕',`${o.mkNo}: status „${STL[s]}” ${ok?'actualizat':'netrimis'}`);
+    }
+  };
+})();
+MK.dl('__sm__view_homepage');
 
 $('#pushlogo').src=IMG.logo;
 (function clock(){ const d=new Date(); $('#clock').textContent=d.getHours()+':'+String(d.getMinutes()).padStart(2,'0'); setTimeout(clock,30000); })();

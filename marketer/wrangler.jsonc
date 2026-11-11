@@ -1,0 +1,7 @@
+{
+  "name": "palmiye-marketer",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-10-01",
+  "account_id": "a97df89fcc7d7f587d5a8ca5a921c6c1",
+  "workers_dev": true
+}
