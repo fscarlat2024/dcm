@@ -546,9 +546,9 @@ function startRead(){
 document.addEventListener('click',e=>{
   const b=e.target.closest('button'); if(!b) return; const d=b.dataset;
   if(d.role){ setRole(d.role); if(b.classList.contains('rs')) window.scrollTo({top:0,behavior:'smooth'}); return; }
-  if(d.tab){ if(S.role==='client') go('client',d.tab); else go('staff',d.tab); return; }
+  if(d.tab){ if(S.role==='client'){ go('client',d.tab); if(d.tab==='menu') MK.dl('__sm__view_category',{category:'Palmiye|Torturi'},'A deschis meniul'); } else go('staff',d.tab); return; }
   if(d.q){ const n=(S.cart[d.q]||0)+ +d.d; if(n<=0) delete S.cart[d.q]; else S.cart[d.q]=n; render(); if(+d.d>0) toast('Adăugat în coș');
-    const m=MENU.find(x=>x.id===d.q); MK.dl(+d.d>0?'__sm__add_to_cart':'__sm__remove_from_cart',{product_id:d.q,quantity:1},(+d.d>0?'Adăugat în coș: ':'Scos din coș: ')+(m?m.n:d.q)); return; }
+    const m=MENU.find(x=>x.id===d.q); MK.dl(+d.d>0?'__sm__add_to_cart':'__sm__remove_from_cart',{product_id:MK.pid(d.q),quantity:1},(+d.d>0?'Adăugat în coș: ':'Scos din coș: ')+(m?m.n:d.q)); return; }
   if(d.mode){ S.mode=d.mode; render(); return; }
   if(d.day){ S.day=d.day; render(); return; }
   if('pts' in d){ S.usePts=!S.usePts; render(); return; }
@@ -599,16 +599,18 @@ var MK = (()=>{
       const j=await r.json(); return j.ok===true; }catch(e){ return false; }
   }
   const STAT={1:'processing',2:'ready',3:'shipped',4:'fulfilled'};
+  const PID={london:101,biscoff:102,pistachio:103,lotus:104,tiramisu:105,fistic:106,jungle:107};
+  const pid=n=>{const m=MENU.find(x=>x.n===n||x.id===n); return m?(PID[m.id]||m.id):n;};
   return {
-    dl,
+    dl, pid,
     async order(o,disc,fee){
       const mail=email(); o.mkNo=`APP-${sess}-${o.no}`;
       dl('__sm__initiate_checkout');
       if(!mail){ line('no','!',`Comanda #${o.no} nu a plecat în TheMarketer: scrieți un email de test mai sus.`); o.mkNo=null; return; }
       dl('__sm__set_email',{email_address:mail,firstname:'Cristina',lastname:'Popescu'});
-      dl('__sm__order',{number:o.mkNo,email_address:mail,phone:'0722123456',firstname:'Cristina',lastname:'Popescu',city:'București',county:'București',address:o.addr||'Ridicare AFI Cotroceni',discount_value:disc,discount_code:'',shipping:fee,tax:0,total_value:o.total,products:o.items.map(i=>({product_id:MENU.find(m=>m.n===i.n)?.id||i.n,price:i.p,quantity:i.q,variation_sku:''}))});
+      dl('__sm__order',{number:o.mkNo,email_address:mail,phone:'0722123456',firstname:'Cristina',lastname:'Popescu',city:'București',county:'București',address:o.addr||'Ridicare AFI Cotroceni',discount_value:disc,discount_code:'',shipping:fee,tax:0,total_value:o.total,products:o.items.map(i=>({product_id:pid(i.n),price:i.p,quantity:i.q,variation_sku:''}))});
       const ok=await post('/comanda',{number:o.mkNo,email:mail,phone:'0722123456',firstname:'Cristina',lastname:'Popescu',address:o.addr||'Ridicare AFI Cotroceni',discount_value:disc,shipping:fee,total_value:o.total,
-        products:o.items.map(i=>({product_id:MENU.find(m=>m.n===i.n)?.id||i.n,price:i.p,quantity:i.q}))});
+        products:o.items.map(i=>({product_id:pid(i.n),price:i.p,quantity:i.q}))});
       line(ok?'ok':'no',ok?'✓':'✕',ok?`Comanda ${o.mkNo} (${lei(o.total)}) a ajuns în TheMarketer`:`Comanda ${o.mkNo} nu a putut fi trimisă`, mail);
       if(!ok){ o.mkNo=null; return; }
       if(nw.checked){ const s=await post('/abonare',{email:mail,phone:'0722123456',firstname:'Cristina',lastname:'Popescu'});
