@@ -361,7 +361,7 @@ function locChip(){
 function card(clickable){
   const g = S.tier==='Gold';
   const next = g ? 1000 : 500;
-  return `<button type="button" class="mcard ${g?'gold':''}" ${clickable?'data-tab="card"':''}><small>${g?'Card Gold Palmiye':'Membru Clubul Palmiye'}</small><div class="n">Andreea Popescu</div><div class="pts"><div><b>${S.pts}</b> <span>puncte</span></div><span>${g?'−10% la tot':'100 puncte = 10 lei'}</span></div><div class="bar"><i style="width:${Math.min(100,S.pts/next*100)}%"></i></div></button>`;
+  return `<button type="button" class="mcard ${g?'gold':''}" ${clickable?'data-tab="card"':''}><small>${g?'Card Gold Palmiye':'Membru Clubul Palmiye'}</small><div class="n">Cristina Popescu</div><div class="pts"><div><b>${S.pts}</b> <span>puncte</span></div><span>${g?'−10% la tot':'100 puncte = 10 lei'}</span></div><div class="bar"><i style="width:${Math.min(100,S.pts/next*100)}%"></i></div></button>`;
 }
 
 const V = {
@@ -393,8 +393,8 @@ const V = {
     const h = new Date().getHours(); const g = h<12?'Bună dimineața':h<18?'Bună ziua':'Bună seara';
     const so = S.loc && S.perms.loc ? STORE_OFFER[S.loc] : null;
     const act = S.wallet.filter(w => w.left > 0);
-    return `<div class="top"><img src="${IMG.logo}" alt="Palmiye"><button type="button" class="av" data-go="cont" aria-label="Contul meu">AP</button></div>
-      <h2 class="ttl">${g}, <em>Andreea</em></h2>
+    return `<div class="top"><img src="${IMG.logo}" alt="Palmiye"><button type="button" class="av" data-go="cont" aria-label="Contul meu">CP</button></div>
+      <h2 class="ttl">${g}, <em>Cristina</em></h2>
       ${locChip()}
       ${card(true)}
       ${so?`<div class="lbl">Oferta magazinului în care ești</div><div class="offer hot"><div class="ic"><img src="${IMG[so.img]}" alt=""></div><div><b>${so.t}</b><span>${so.s}</span></div></div>`:''}
@@ -469,7 +469,7 @@ const V = {
         .map(([k,t,s])=>`<button type="button" class="tog ${S.prefs[k]?'on':''}" data-pref="${k}"><span>${t}<small>${s}</small></span><span class="sw"></span></button>`).join('')}`;
   },
   cont(){ return `<button type="button" class="back backp" data-tab="home">← Înapoi</button>
-    <h2 class="ttl">Contul meu</h2><p class="sub">Andreea Popescu · ${esc(S.phone)}</p>
+    <h2 class="ttl">Contul meu</h2><p class="sub">Cristina Popescu · ${esc(S.phone)}</p>
     <button type="button" class="tog ${S.perms.loc?'on':''}" data-toggleperm="loc"><span>Locație<small>Pentru ofertele magazinului în care ești</small></span><span class="sw"></span></button>
     <button type="button" class="tog ${S.perms.notif?'on':''}" data-toggleperm="notif"><span>Notificări<small>Le alegi pe tipuri în Noutăți</small></span><span class="sw"></span></button>
     <div class="lbl">Date</div>
@@ -486,7 +486,7 @@ const V = {
       <p class="ex">Ecranul de casă merge pe orice tabletă sau telefon. Casa de marcat rămâne cum e.</p>`;
     const act = S.wallet.filter(w=>w.left>0);
     return `<div class="top"><img src="${IMG.logo}" alt="Palmiye"><span class="chip">Casa · ${STORES[S.loc]||'AFI Cotroceni'}</span></div>
-      <div class="cust"><div class="h"><button type="button" class="av" tabindex="-1">AP</button><div><b>Andreea Popescu</b><br><span class="tier ${S.tier==='Gold'?'g':''}">${S.tier==='Gold'?'Gold · −10%':'Membru'}</span> <span class="ex">${S.pts} puncte</span></div></div>
+      <div class="cust"><div class="h"><button type="button" class="av" tabindex="-1">CP</button><div><b>Cristina Popescu</b><br><span class="tier ${S.tier==='Gold'?'g':''}">${S.tier==='Gold'?'Gold · −10%':'Membru'}</span> <span class="ex">${S.pts} puncte</span></div></div>
       ${act.length?act.map(w=>`<div class="wal" style="margin:0 0 8px"><img src="${IMG[pack(w.id).img]}" alt=""><div><b>${esc(w.n)}</b><span>${w.left} din ${w.total} rămase</span></div><button type="button" class="pill" data-use="${w.uid}">Folosește 1</button></div>`).join('')
         :`<p class="sub" style="margin:0">Nu are pachete active.</p>`}</div>
       <div class="lbl">Bon fără pachet</div>
@@ -598,7 +598,7 @@ document.addEventListener('click', e=>{
     S.sent++; render(); toast('Notificare trimisă');
     const fits = S.adminAud==='all' || (S.adminAud==='gold'&&S.tier==='Gold') || (S.adminAud==='prom'&&S.loc==='prom'&&S.perms.loc);
     if(fits && S.loggedIn) notify(S.adminAud==='prom'?'Palmiye Promenada':'Palmiye', S.adminMsg || 'Noutăți Palmiye', 'P','notif');
-    else if(S.loggedIn) setTimeout(()=>toast(S.adminAud==='gold'?'Andreea nu e Gold, n-o primește':'Andreea nu e la Promenada, n-o primește'),1900);
+    else if(S.loggedIn) setTimeout(()=>toast(S.adminAud==='gold'?'Cristina nu e Gold, n-o primește':'Cristina nu e la Promenada, n-o primește'),1900);
     return;
   }
 });

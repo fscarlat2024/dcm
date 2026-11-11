@@ -377,8 +377,8 @@ function orderItems(o){ return o.items.map(i=>`${i.q}× ${esc(i.n)}`).join(', ')
 const V = {
   /* CLIENT */
   home(){ const o=mine();
-    return `<div class="top"><img src="${IMG.logo}" alt="Palmiye"><span class="chip">Andreea P.</span></div>
-      <h2 class="ttl">Bună, <em>Andreea</em></h2>
+    return `<div class="top"><img src="${IMG.logo}" alt="Palmiye"><span class="chip">Cristina P.</span></div>
+      <h2 class="ttl">Bună, <em>Cristina</em></h2>
       <div class="mcard"><small>Clubul Palmiye · Membru</small><div class="pts"><div><b>${S.pts}</b> puncte</div><span>${Math.floor(S.pts/100)*10} lei de folosit<br>100 puncte = 10 lei</span></div></div>
       ${o&&o.st<4?`<div class="lbl">Comanda ta</div><button type="button" class="ord" data-tab="track" style="width:100%;text-align:left;cursor:pointer;font-family:var(--body)"><div class="h"><b>#${o.no} · ${lei(o.total)}</b><span class="st st${o.st}">${stLabel(o)}</span></div><div class="it">${orderItems(o)}</div><div class="mt">${o.mode==='livrare'?'Livrare · '+esc(o.when):'Ridicare de la '+STORES[o.store].n}</div></button>`:''}
       <div class="lbl">Recomandate</div>
@@ -532,7 +532,7 @@ document.addEventListener('click',e=>{
     const items=Object.entries(S.cart).map(([id,q])=>{const m=MENU.find(x=>x.id===id); return {n:m.n,q,p:m.p,i:m.i};});
     if(disc){ S.pts-=disc*10; S.hist.unshift({t:`Puncte folosite la #${no}`,d:'azi',v:'−'+disc*10}); }
     S.pts+=tot; S.hist.unshift({t:`Comanda #${no}`,d:'azi · '+lei(tot),v:'+'+tot});
-    S.orders.push({no, client:'Andreea Popescu', phone:'0722 123 456', items, total:tot, paid:true, chn:'app', mode:S.mode, store:'afi', addr:S.mode==='livrare'?S.addr:'', dest:S.mode==='livrare'?{x:178,y:186}:null, when:S.day+(S.mode==='livrare'?', 14:00–16:00':', 15:00'), st:0, earned:tot});
+    S.orders.push({no, client:'Cristina Popescu', phone:'0722 123 456', items, total:tot, paid:true, chn:'app', mode:S.mode, store:'afi', addr:S.mode==='livrare'?S.addr:'', dest:S.mode==='livrare'?{x:178,y:186}:null, when:S.day+(S.mode==='livrare'?', 14:00–16:00':', 15:00'), st:0, earned:tot});
     S.myNo=no; S.cart={}; S.usePts=false; go('client','done'); return;
   }
   if(d.filter){ S.filter=d.filter; render(); return; }
