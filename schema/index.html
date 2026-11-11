@@ -46,6 +46,8 @@ h1 em{color:var(--gold)}
 .b .au{display:block;margin-top:6px;font-size:12px;color:var(--brown);font-style:italic}
 .b .au::before{content:"⚡ "}
 .b.client{--k:var(--c-client)} .b.staff{--k:var(--c-staff)} .b.driver{--k:var(--c-driver)} .b.boss{--k:var(--c-boss)}
+.b.pts{background:#fbefd9;border-color:#e8c98f;box-shadow:0 0 0 2px rgba(193,142,64,.25),0 6px 16px -12px rgba(43,28,20,.35)}
+.b.pts b{color:#8a5a12}
 .b.dec{border-style:dashed;border-left-style:solid;text-align:center}
 .b.dec b{display:block}
 .who{display:none;font:800 10.5px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--k);margin-bottom:4px}
@@ -98,7 +100,7 @@ svg.wires{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-eve
       <div class="b client" id="c1" style="grid-column:1;grid-row:1;--o:1"><span class="who">Client</span><span class="n">1</span><b>Comandă în aplicație</b><p>Alege torturi sau deserturi, livrare acasă sau ridicare din magazin, ziua și ora.</p></div>
       <div class="b staff" id="s1" style="grid-column:2;grid-row:1;--o:3"><span class="who">Personal</span><span class="n">1b</span><b>Comandă la telefon sau pe hârtie</b><p>Fotografiază foaia de comandă (se completează singură) sau o introduce manual.</p></div>
 
-      <div class="b client" id="c2" style="grid-column:1;grid-row:2;--o:2"><span class="who">Client</span><span class="n">2</span><b>Plătește cu cardul</b><p>Poate folosi punctele de fidelitate ca reducere.</p><span class="au">primește puncte pe loc</span></div>
+      <div class="b client" id="c2" style="grid-column:1;grid-row:2;--o:2"><span class="who">Client</span><span class="n">2</span><b>Plătește cu cardul</b><p>Poate folosi punctele strânse ca reducere: 100 de puncte = 10 lei.</p></div>
 
       <div class="b staff" id="s3" style="grid-column:2;grid-row:3;--o:4"><span class="who">Personal</span><span class="n">3</span><b>Comanda intră în listă</b><p>Cu sursa ei: aplicație, telefon sau hârtie.</p><span class="au">notificare la laborator</span></div>
       <div class="b client" id="c3" style="grid-column:1;grid-row:3;--o:5"><span class="who">Client</span><b>Notificare: „comanda e primită”</b><span class="au">trimisă automat</span></div>
@@ -108,7 +110,7 @@ svg.wires{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-eve
 
       <div class="b staff dec" id="s5" style="grid-column:2;grid-row:5;--o:8"><span class="who">Personal</span><b>Livrare sau ridicare?</b><p>Aplicația știe din comandă.</p></div>
 
-      <div class="b client" id="c5" style="grid-column:1;grid-row:6;--o:9"><span class="who">Client</span><span class="n">5a</span><b>Ridică din magazin</b><p>Arată codul din aplicație; casierul îl scanează și comanda se închide.</p></div>
+      <div class="b client" id="c5" style="grid-column:1;grid-row:6;--o:9"><span class="who">Client</span><span class="n">5a</span><b>Ridică din magazin</b><p>Arată codul din aplicație; casierul îl scanează și comanda se închide.</p><span class="au">primește punctele (pasul 10)</span></div>
       <div class="b staff" id="s6" style="grid-column:2;grid-row:6;--o:10"><span class="who">Personal</span><span class="n">5b</span><b>Dă comanda unui șofer</b><p>Alege șoferul liber.</p></div>
 
       <div class="b driver" id="d1" style="grid-column:3;grid-row:6;--o:11"><span class="who">Șofer</span><span class="n">6</span><b>Vede ce are de livrat</b><p>Adresa, produsele, mesajul de pe tort și dacă e plătită sau ce încasează.</p></div>
@@ -116,16 +118,18 @@ svg.wires{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-eve
       <div class="b client" id="c7" style="grid-column:1;grid-row:7;--o:13"><span class="who">Client</span><b>Urmărește șoferul pe hartă</b><p>Vede în câte minute ajunge.</p></div>
 
       <div class="b driver" id="d3" style="grid-column:3;grid-row:8;--o:14"><span class="who">Șofer</span><span class="n">8</span><b>„Am livrat”</b><p>Opțional, o poză ca dovadă a predării.</p></div>
-      <div class="b client" id="c8" style="grid-column:1;grid-row:8;--o:15"><span class="who">Client</span><span class="n">9</span><b>Primește comanda</b><p>Notificare „Poftă bună”, puncte confirmate, invitație la recenzie.</p></div>
+      <div class="b client" id="c8" style="grid-column:1;grid-row:8;--o:15"><span class="who">Client</span><span class="n">9</span><b>Primește comanda</b><p>Notificare „Poftă bună” și invitație la recenzie.</p></div>
 
-      <div class="boss-col" id="b1" style="grid-column:4;grid-row:1 / span 8;--o:16"><span class="who" style="--k:var(--c-boss)">Director</span><b>Vede tot, în timp real</b>
+      <div class="b client pts" id="c9" style="grid-column:1;grid-row:9;--o:16"><span class="who">Client</span><span class="n">10</span><b>★ Primește puncte de fidelitate</b><p>1 punct pentru fiecare leu cheltuit, la livrare sau la ridicare. 100 de puncte = 10 lei reducere la comanda următoare.</p><span class="au">punctele apar singure în contul lui</span></div>
+
+      <div class="boss-col" id="b1" style="grid-column:4;grid-row:1 / span 9;--o:17"><span class="who" style="--k:var(--c-boss)">Director</span><b>Vede tot, în timp real</b>
         <ul>
           <li>Valoarea și numărul comenzilor de azi, valoarea medie</li>
           <li>Câte vin din aplicație, de la telefon și de pe hârtie</li>
           <li>Vânzările pe fiecare magazin</li>
           <li>Unde e fiecare șofer pe traseu și când ajunge</li>
           <li>Ce comenzi sunt în lucru, gata sau pe drum</li>
-          <li>Punctele de fidelitate date și folosite</li>
+          <li>Punctele de fidelitate date și folosite, pe fiecare client</li>
           <li>Trimite oferte prin notificări</li>
         </ul>
         <div class="alert">⚡ Alertă când o comandă riscă să întârzie</div>
@@ -146,7 +150,7 @@ svg.wires{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-eve
 <script>
 const EDGES = [
   ['c1','c2'], ['c2','s3'], ['s1','s3'], ['s3','c3','dash'], ['s3','s4'], ['s4','c4','dash'], ['s4','s5'],
-  ['s5','c5'], ['s5','s6'], ['s6','d1'], ['d1','d2'], ['d2','c7','dash'], ['d2','d3'], ['d3','c8']
+  ['s5','c5'], ['s5','s6'], ['s6','d1'], ['d1','d2'], ['d2','c7','dash'], ['d2','d3'], ['d3','c8'], ['c8','c9']
 ];
 const COL = {client:'#c18e40', staff:'#6b4733', driver:'#2f6f9f', boss:'#3f7d4e'};
 function draw(){
