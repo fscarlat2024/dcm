@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#4b3023">
+<title>Palmiye: cum circulă o comandă</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Manrope:wght@400;500;600;700;800&display=swap">
+<style>
+/* Swimlanes: one column per role, steps placed on shared rows; connectors drawn on top. On phones: one column, in order. */
+:root{
+  --page:#f3ede6; --ink:#2b1c14; --mute:#7a6455; --line:#e2d6c9; --card:#fffaf4;
+  --brown:#4b3023; --gold:#c18e40;
+  --c-client:#c18e40; --c-staff:#6b4733; --c-driver:#2f6f9f; --c-boss:#3f7d4e;
+  --display:"DM Serif Display", Georgia, serif; --body:"Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--page);color:var(--ink);font:15px/1.45 var(--body);padding:28px max(16px,env(safe-area-inset-right,0px)) 48px max(16px,env(safe-area-inset-left,0px))}
+.wrap{max-width:1180px;margin:0 auto}
+.tag{display:inline-block;font:800 11px var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+h1{font:400 40px/1.05 var(--display);margin:0 0 10px;text-wrap:balance}
+h1 em{color:var(--gold)}
+.lead{color:var(--mute);max-width:64ch;margin:0 0 18px}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin:0 0 22px;font-size:13px;color:var(--mute)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:12px;height:12px;border-radius:4px;display:inline-block}
+.legend .auto{font-style:italic}
+
+.board{position:relative}
+.lanes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0 22px;position:relative;z-index:1}
+.lh{border-radius:14px;padding:10px 12px;color:#fff;font:800 13px var(--body);letter-spacing:.06em;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.lh small{font:600 11.5px var(--body);letter-spacing:0;text-transform:none;opacity:.85}
+.lh.client{background:var(--c-client)} .lh.staff{background:var(--c-staff)} .lh.driver{background:var(--c-driver)} .lh.boss{background:var(--c-boss)}
+.lanebg{position:absolute;inset:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0 22px;z-index:0;pointer-events:none}
+.lanebg div{border-radius:18px;background:rgba(255,255,255,.35);border:1px dashed var(--line)}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:minmax(86px,auto);gap:26px 22px;position:relative;z-index:1}
+.b{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--k);border-radius:14px;padding:11px 13px;font-size:13.5px;align-self:start;box-shadow:0 6px 16px -12px rgba(43,28,20,.35)}
+.b .n{display:inline-grid;place-items:center;min-width:22px;height:22px;border-radius:11px;background:var(--k);color:#fff;font:800 11.5px var(--body);margin-right:6px;padding:0 6px}
+.b b{font-size:14px}
+.b p{margin:5px 0 0;color:var(--mute);font-size:12.8px}
+.b .au{display:block;margin-top:6px;font-size:12px;color:var(--brown);font-style:italic}
+.b .au::before{content:"⚡ "}
+.b.client{--k:var(--c-client)} .b.staff{--k:var(--c-staff)} .b.driver{--k:var(--c-driver)} .b.boss{--k:var(--c-boss)}
+.b.dec{border-style:dashed;border-left-style:solid;text-align:center}
+.b.dec b{display:block}
+.who{display:none;font:800 10.5px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--k);margin-bottom:4px}
+.boss-col{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--c-boss);border-radius:14px;padding:14px;align-self:stretch;box-shadow:0 6px 16px -12px rgba(43,28,20,.35)}
+.boss-col b{font-size:15px}
+.boss-col ul{margin:8px 0 0;padding-left:18px;color:var(--mute);font-size:13px;display:grid;gap:6px}
+.boss-col .alert{margin-top:12px;background:#fbeeea;border:1px solid #f0d2ca;border-radius:12px;padding:9px 11px;font-size:12.5px;color:#7a2e23}
+svg.wires{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none;overflow:visible}
+.foot{margin-top:28px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.foot div{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-size:13px;color:var(--mute)}
+.foot b{display:block;color:var(--ink);font-size:14px;margin-bottom:2px}
+.note{font-size:12.5px;color:var(--mute);border-top:1px solid var(--line);padding-top:12px;margin-top:24px}
+.note a{color:var(--brown)}
+@media (max-width:860px){
+  h1{font-size:32px}
+  .lanes,.lanebg,svg.wires{display:none}
+  .grid{grid-template-columns:1fr;grid-auto-rows:auto;gap:0}
+  .grid>*{grid-column:1!important;grid-row:auto!important;order:var(--o)}
+  .who{display:block}
+  .b,.boss-col{position:relative;margin-bottom:28px}
+  .b::after{content:"";position:absolute;left:50%;bottom:-24px;width:2px;height:20px;background:var(--line)}
+  .b::before{content:"";position:absolute;left:calc(50% - 5px);bottom:-26px;border:5px solid transparent;border-top-color:#bba98f;border-bottom:0}
+  .boss-col{margin-top:10px}
+  .foot{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="tag">Palmiye Cakes &amp; Gelato · schemă</span>
+  <h1>Cum circulă <em>o comandă</em> prin aplicație</h1>
+  <p class="lead">Patru oameni, o singură comandă. Clientul sau personalul o creează, laboratorul o pregătește, șoferul o duce, iar directorul vede totul în timp ce se întâmplă. Pașii marcați cu ⚡ îi face aplicația singură.</p>
+  <div class="legend">
+    <span><i style="background:var(--c-client)"></i>Client</span>
+    <span><i style="background:var(--c-staff)"></i>Personal (preia comanda)</span>
+    <span><i style="background:var(--c-driver)"></i>Șofer</span>
+    <span><i style="background:var(--c-boss)"></i>Director</span>
+    <span class="auto">⚡ automat, făcut de aplicație</span>
+  </div>
+
+  <div class="board" id="board">
+    <div class="lanebg"><div></div><div></div><div></div><div></div></div>
+    <div class="lanes">
+      <div class="lh client">Client <small>în aplicație</small></div>
+      <div class="lh staff">Personal <small>laborator și magazine</small></div>
+      <div class="lh driver">Șofer <small>pe telefonul lui</small></div>
+      <div class="lh boss">Director <small>vede tot</small></div>
+    </div>
+    <div class="grid" id="grid">
+      <div class="b client" id="c1" style="grid-column:1;grid-row:1;--o:1"><span class="who">Client</span><span class="n">1</span><b>Comandă în aplicație</b><p>Alege torturi sau deserturi, livrare acasă sau ridicare din magazin, ziua și ora.</p></div>
+      <div class="b staff" id="s1" style="grid-column:2;grid-row:1;--o:3"><span class="who">Personal</span><span class="n">1b</span><b>Comandă la telefon sau pe hârtie</b><p>Fotografiază foaia de comandă (se completează singură) sau o introduce manual.</p></div>
+
+      <div class="b client" id="c2" style="grid-column:1;grid-row:2;--o:2"><span class="who">Client</span><span class="n">2</span><b>Plătește cu cardul</b><p>Poate folosi punctele de fidelitate ca reducere.</p><span class="au">primește puncte pe loc</span></div>
+
+      <div class="b staff" id="s3" style="grid-column:2;grid-row:3;--o:4"><span class="who">Personal</span><span class="n">3</span><b>Comanda intră în listă</b><p>Cu sursa ei: aplicație, telefon sau hârtie.</p><span class="au">notificare la laborator</span></div>
+      <div class="b client" id="c3" style="grid-column:1;grid-row:3;--o:5"><span class="who">Client</span><b>Notificare: „comanda e primită”</b><span class="au">trimisă automat</span></div>
+
+      <div class="b staff" id="s4" style="grid-column:2;grid-row:4;--o:6"><span class="who">Personal</span><span class="n">4</span><b>În lucru → Gata</b><p>Laboratorul apasă „Începe lucrul”, apoi „E gata”.</p></div>
+      <div class="b client" id="c4" style="grid-column:1;grid-row:4;--o:7"><span class="who">Client</span><b>Notificare la fiecare pas</b><p>„În lucru”, apoi „Gata”.</p></div>
+
+      <div class="b staff dec" id="s5" style="grid-column:2;grid-row:5;--o:8"><span class="who">Personal</span><b>Livrare sau ridicare?</b><p>Aplicația știe din comandă.</p></div>
+
+      <div class="b client" id="c5" style="grid-column:1;grid-row:6;--o:9"><span class="who">Client</span><span class="n">5a</span><b>Ridică din magazin</b><p>Arată codul din aplicație; casierul îl scanează și comanda se închide.</p></div>
+      <div class="b staff" id="s6" style="grid-column:2;grid-row:6;--o:10"><span class="who">Personal</span><span class="n">5b</span><b>Dă comanda unui șofer</b><p>Alege șoferul liber.</p></div>
+
+      <div class="b driver" id="d1" style="grid-column:3;grid-row:6;--o:11"><span class="who">Șofer</span><span class="n">6</span><b>Vede ce are de livrat</b><p>Adresa, produsele, mesajul de pe tort și dacă e plătită sau ce încasează.</p></div>
+      <div class="b driver" id="d2" style="grid-column:3;grid-row:7;--o:12"><span class="who">Șofer</span><span class="n">7</span><b>Pornește spre client</b><p>Navighează cu Google Maps; îl poate suna dintr-o apăsare.</p><span class="au">poziția lui se vede pe hartă</span></div>
+      <div class="b client" id="c7" style="grid-column:1;grid-row:7;--o:13"><span class="who">Client</span><b>Urmărește șoferul pe hartă</b><p>Vede în câte minute ajunge.</p></div>
+
+      <div class="b driver" id="d3" style="grid-column:3;grid-row:8;--o:14"><span class="who">Șofer</span><span class="n">8</span><b>„Am livrat”</b><p>Opțional, o poză ca dovadă a predării.</p></div>
+      <div class="b client" id="c8" style="grid-column:1;grid-row:8;--o:15"><span class="who">Client</span><span class="n">9</span><b>Primește comanda</b><p>Notificare „Poftă bună”, puncte confirmate, invitație la recenzie.</p></div>
+
+      <div class="boss-col" id="b1" style="grid-column:4;grid-row:1 / span 8;--o:16"><span class="who" style="--k:var(--c-boss)">Director</span><b>Vede tot, în timp real</b>
+        <ul>
+          <li>Valoarea și numărul comenzilor de azi, valoarea medie</li>
+          <li>Câte vin din aplicație, de la telefon și de pe hârtie</li>
+          <li>Vânzările pe fiecare magazin</li>
+          <li>Unde e fiecare șofer pe traseu și când ajunge</li>
+          <li>Ce comenzi sunt în lucru, gata sau pe drum</li>
+          <li>Punctele de fidelitate date și folosite</li>
+          <li>Trimite oferte prin notificări</li>
+        </ul>
+        <div class="alert">⚡ Alertă când o comandă riscă să întârzie</div>
+      </div>
+    </div>
+    <svg class="wires" id="wires" aria-hidden="true"></svg>
+  </div>
+
+  <div class="foot">
+    <div><b>Un singur loc pentru comenzi</b>Aplicația, telefonul și hârtia ajung în aceeași listă. Nu se mai pierde nicio foaie.</div>
+    <div><b>Clientul nu mai sună să întrebe</b>Notificările și harta îi spun unde e comanda.</div>
+    <div><b>Directorul nu mai întreabă pe nimeni</b>Cifrele și șoferii se văd pe telefon, oricând.</div>
+  </div>
+
+  <p class="note">Schemă de prezentare pentru aplicația propusă. Vedeți totul funcționând în <a href="../complet/">simularea cu cele patru roluri</a>.</p>
+</div>
+
+<script>
+const EDGES = [
+  ['c1','c2'], ['c2','s3'], ['s1','s3'], ['s3','c3','dash'], ['s3','s4'], ['s4','c4','dash'], ['s4','s5'],
+  ['s5','c5'], ['s5','s6'], ['s6','d1'], ['d1','d2'], ['d2','c7','dash'], ['d2','d3'], ['d3','c8']
+];
+const COL = {client:'#c18e40', staff:'#6b4733', driver:'#2f6f9f', boss:'#3f7d4e'};
+function draw(){
+  const svg = document.getElementById('wires'), board = document.getElementById('board');
+  if (getComputedStyle(svg).display === 'none') { svg.innerHTML=''; return; }
+  const B = board.getBoundingClientRect();
+  const box = id => { const r = document.getElementById(id).getBoundingClientRect(); return {l:r.left-B.left, r:r.right-B.left, t:r.top-B.top, b:r.bottom-B.top, cx:(r.left+r.right)/2-B.left, cy:(r.top+r.bottom)/2-B.top}; };
+  const roleOf = id => document.getElementById(id).classList[1];
+  let out = '<defs>' + Object.entries(COL).map(([k,c]) => `<marker id="a-${k}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="${c}"/></marker>`).join('') + '</defs>';
+  EDGES.forEach(([f,t,style]) => {
+    const a = box(f), b = box(t), col = COL[roleOf(f)];
+    let d;
+    if (Math.abs(a.cx - b.cx) < 20) { d = `M${a.cx} ${a.b} L${b.cx} ${b.t-2}`; }
+    else if (b.t >= a.b - 4) {
+      const goingRight = b.cx > a.cx;
+      const sx = goingRight ? a.r : a.l, sy = a.cy;
+      const tx = b.cx, ty = b.t - 2;
+      d = `M${sx} ${sy} L${tx} ${sy} L${tx} ${ty}`;
+      if (Math.abs(b.cy - a.cy) < 10) d = `M${sx} ${sy} L${goingRight ? b.l-2 : b.r+2} ${sy}`;
+    } else {
+      const goingRight = b.cx > a.cx;
+      const sx = goingRight ? a.r : a.l, tx = goingRight ? b.l - 2 : b.r + 2, y = Math.max(a.t, b.t) + 22;
+      d = `M${sx} ${y} L${tx} ${y}`;
+    }
+    out += `<path d="${d}" fill="none" stroke="${col}" stroke-width="2.2" ${style==='dash'?'stroke-dasharray="5 4"':''} marker-end="url(#a-${roleOf(f)})" stroke-linejoin="round"/>`;
+  });
+  svg.innerHTML = out;
+}
+window.addEventListener('resize', draw);
+document.fonts && document.fonts.ready.then(draw);
+window.addEventListener('load', draw);
+draw();
+</script>
+</body>
+</html>
