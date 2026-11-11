@@ -1,0 +1,8 @@
+.git
+.git/*
+wrangler.jsonc
+.assetsignore
+marketer
+marketer/*
+.wrangler
+.wrangler/*

@@ -1,0 +1,10 @@
+{
+  // Paginile de prezentare Palmiye (dcm), servite ca fisiere statice.
+  "name": "palmiye-dcm",
+  "account_id": "a97df89fcc7d7f587d5a8ca5a921c6c1",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./",
+    "html_handling": "auto-trailing-slash"
+  }
+}
